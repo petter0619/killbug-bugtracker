@@ -1,0 +1,15 @@
+{
+	"semi": false,
+	"printWidth": 125,
+	"useTabs": true,
+	"singleQuote": true,
+	"arrowParens": "always",
+	"overrides": [
+		{
+			"files": ".ts",
+			"options": {
+				"semi": true
+			}
+		}
+	]
+}
