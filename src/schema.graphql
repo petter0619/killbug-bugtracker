@@ -1,7 +1,22 @@
+type Project {
+	id: ID
+	name: String
+	description: String
+	# ticket: [Ticket]
+}
+
+type DeletedResourceResponse {
+	deletedId: ID
+	success: Boolean
+}
+
 type Query {
-	helloQuery: String
+	getProjectById(projectId: ID!): Project
+	getAllProjects: String
 }
 
 type Mutation {
-	helloMutation(message: String): String
+	createProject: Project
+	updateProject: Project
+	deleteProject: DeletedResourceResponse
 }
