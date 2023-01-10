@@ -1,31 +1,32 @@
 {
-  "name": "killbug-bugtracker",
-  "version": "1.0.0",
-  "description": "Simple overview of use/purpose.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/petter0619/killbug-bugtracker.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/petter0619/killbug-bugtracker/issues"
-  },
-  "homepage": "https://github.com/petter0619/killbug-bugtracker#readme",
-  "devDependencies": {
-    "nodemon": "^2.0.20",
-    "prettier": "2.8.2"
-  },
-  "dependencies": {
-    "@apollo/server": "^4.3.0",
-    "@graphql-tools/load-files": "^6.6.1",
-    "@graphql-tools/schema": "^9.0.12",
-    "dotenv": "^16.0.3",
-    "graphql": "^16.6.0"
-  }
+	"name": "killbug-bugtracker",
+	"version": "1.0.0",
+	"description": "Simple overview of use/purpose.",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "nodemon ./src/server.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/petter0619/killbug-bugtracker.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/petter0619/killbug-bugtracker/issues"
+	},
+	"homepage": "https://github.com/petter0619/killbug-bugtracker#readme",
+	"devDependencies": {
+		"nodemon": "^2.0.20",
+		"prettier": "2.8.2"
+	},
+	"dependencies": {
+		"@apollo/server": "^4.3.0",
+		"@graphql-tools/load-files": "^6.6.1",
+		"@graphql-tools/schema": "^9.0.12",
+		"dotenv": "^16.0.3",
+		"graphql": "^16.6.0"
+	}
 }
