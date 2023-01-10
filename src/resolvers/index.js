@@ -1,6 +1,6 @@
 const path = require('path')
 const fsPromises = require('fs/promises')
-const { fileExists } = require('../utils/fileHandling')
+const { fileExists, readJsonFile } = require('../utils/fileHandling')
 const { GraphQLError } = require('graphql')
 
 exports.resolvers = {
@@ -17,8 +17,29 @@ exports.resolvers = {
 			const data = JSON.parse(projectData)
 			return data
 		},
-		getAllProjects: (_, args) => {
-			return null
+		getAllProjects: async (_, args) => {
+			const projectsDirectory = path.join(__dirname, '../data/projects')
+
+			const projects = await fsPromises.readdir(projectsDirectory)
+
+			// const projectData = []
+
+			/* for (const file of projects) {
+				// console.log(file)
+				const filePath = path.join(projectsDirectory, file)
+				const fileContents = await fsPromises.readFile(filePath, { encoding: 'utf-8' })
+				const data = JSON.parse(fileContents)
+				projectData.push(data)
+			} */
+
+			const promises = []
+			projects.forEach((fileName) => {
+				const filePath = path.join(projectsDirectory, fileName)
+				promises.push(readJsonFile(filePath))
+			})
+
+			const projectData = await Promise.all(promises)
+			return projectData
 		},
 	},
 	Mutation: {

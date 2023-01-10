@@ -12,7 +12,7 @@ type DeletedResourceResponse {
 
 type Query {
 	getProjectById(projectId: ID!): Project
-	getAllProjects: String
+	getAllProjects: [Project]
 }
 
 type Mutation {
