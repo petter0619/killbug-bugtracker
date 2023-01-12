@@ -2,6 +2,7 @@ const path = require('path')
 const fsPromises = require('fs/promises')
 const { fileExists, readJsonFile } = require('../utils/fileHandling')
 const { GraphQLError } = require('graphql')
+const crypto = require('crypto')
 
 exports.resolvers = {
 	Query: {
@@ -43,8 +44,31 @@ exports.resolvers = {
 		},
 	},
 	Mutation: {
-		createProject: (_, args) => {
-			return null
+		createProject: async (_, args) => {
+			// Verify name
+			if (args.name.length === 0) return new GraphQLError('Name must be at least 1 character long')
+
+			// Skapa ett unikt id + data objektet
+			const newProject = {
+				id: crypto.randomUUID(),
+				name: args.name,
+				description: args.description || ''
+			}
+
+			const filePath = path.join(__dirname, '..', 'data', 'projects', `${newProject.id}.json`)
+
+			let idExists = true
+			while (idExists) {
+				const exists = await fileExists(filePath)
+				console.log(exists, newProject.id)
+				idExists = exists
+			}
+
+			// Skapa en fil för projektet i /data/projects
+			await fsPromises.writeFile(filePath, JSON.stringify(newProject))
+
+			// Skapa våran respons
+			return newProject
 		},
 		updateProject: (_, args) => {
 			return null

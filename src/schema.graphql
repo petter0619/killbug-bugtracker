@@ -16,7 +16,7 @@ type Query {
 }
 
 type Mutation {
-	createProject: Project
+	createProject(name: String!, description: String): Project
 	updateProject: Project
 	deleteProject: DeletedResourceResponse
 }
