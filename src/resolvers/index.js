@@ -1,15 +1,17 @@
 const path = require('path')
 const fsPromises = require('fs/promises')
-const { fileExists, readJsonFile } = require('../utils/fileHandling')
+const { fileExists, readJsonFile, deleteFile, getDirectoryFileNames } = require('../utils/fileHandling')
 const { GraphQLError } = require('graphql')
 const crypto = require('crypto')
+
+const projectDirectory = path.join(__dirname, '..', 'data', 'projects')
 
 exports.resolvers = {
 	Query: {
 		getProjectById: async (_, args) => {
 			const projectId = args.projectId
 			// `../data/projects/${projectId}.json`
-			const projectFilePath = path.join(__dirname, `../data/projects/${projectId}.json`)
+			const projectFilePath = path.join(projectDirectory, `${projectId}.json`)
 
 			const projectExists = await fileExists(projectFilePath)
 			if (!projectExists) return new GraphQLError('That project does not exist')
@@ -19,9 +21,7 @@ exports.resolvers = {
 			return data
 		},
 		getAllProjects: async (_, args) => {
-			const projectsDirectory = path.join(__dirname, '../data/projects')
-
-			const projects = await fsPromises.readdir(projectsDirectory)
+			const projects = await getDirectoryFileNames(projectDirectory)
 
 			// const projectData = []
 
@@ -35,7 +35,7 @@ exports.resolvers = {
 
 			const promises = []
 			projects.forEach((fileName) => {
-				const filePath = path.join(projectsDirectory, fileName)
+				const filePath = path.join(projectDirectory, fileName)
 				promises.push(readJsonFile(filePath))
 			})
 
@@ -57,7 +57,7 @@ exports.resolvers = {
 			}
 
 			// Skapa filePath för där vi ska skapa våran fil
-			let filePath = path.join(__dirname, '..', 'data', 'projects', `${newProject.id}.json`)
+			let filePath = path.join(projectDirectory, `${newProject.id}.json`)
 
 			// Kolla att vårat auto-genererade projektid inte har använts förut
 			let idExists = true
@@ -67,7 +67,7 @@ exports.resolvers = {
 				// om filen redan existerar generera ett nytt projektId och uppdatera filePath
 				if (exists) {
 					newProject.id = crypto.randomUUID()
-					filePath = path.join(__dirname, '..', 'data', 'projects', `${newProject.id}.json`)
+					filePath = path.join(projectDirectory, `${newProject.id}.json`)
 				}
 				// uppdatera idExists (för att undvika infinite loops)
 				idExists = exists
@@ -88,7 +88,7 @@ exports.resolvers = {
 			const { id, name, description } = args
 
 			// Skapa våran filePath
-			const filePath = path.join(__dirname, '..', 'data', 'projects', `${id}.json`)
+			const filePath = path.join(projectDirectory, `${id}.json`)
 
 			// Finns det projekt som de vill ändra?
 				// IF (no) return Not Found Error
@@ -112,7 +112,7 @@ exports.resolvers = {
 			// get project id
 			const projectId = args.projectId
 
-			const filePath = path.join(__dirname, '..', 'data', 'projects', `${projectId}.json`)
+			const filePath = path.join(projectDirectory, `${projectId}.json`)
 			// does this project exist?
 			// If no (return error)
 			const projectExists = await fileExists(filePath)
@@ -120,7 +120,7 @@ exports.resolvers = {
 
 			// delete file
 			try {
-				await fsPromises.unlink(filePath)				
+				await deleteFile(filePath)
 			} catch (error) {
 				return {
 					deletedId: projectId,
