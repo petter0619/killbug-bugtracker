@@ -17,6 +17,6 @@ type Query {
 
 type Mutation {
 	createProject(name: String!, description: String): Project
-	updateProject: Project
-	deleteProject: DeletedResourceResponse
+	updateProject(id: ID!, name: String!, description: String!): Project
+	deleteProject(projectId: ID!): DeletedResourceResponse
 }

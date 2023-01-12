@@ -45,40 +45,93 @@ exports.resolvers = {
 	},
 	Mutation: {
 		createProject: async (_, args) => {
-			// Verify name
+			// Verify name: om strängen är tom, return:a en error
 			if (args.name.length === 0) return new GraphQLError('Name must be at least 1 character long')
 
 			// Skapa ett unikt id + data objektet
 			const newProject = {
+				// Generera ett random id (av typ UUID)
 				id: crypto.randomUUID(),
 				name: args.name,
 				description: args.description || ''
 			}
 
+			// Skapa filePath för där vi ska skapa våran fil
 			let filePath = path.join(__dirname, '..', 'data', 'projects', `${newProject.id}.json`)
 
+			// Kolla att vårat auto-genererade projektid inte har använts förut
 			let idExists = true
 			while (idExists) {
-				const exists = await fileExists(filePath)
+				const exists = await fileExists(filePath) // kolla om filen existerar
 				console.log(exists, newProject.id)
+				// om filen redan existerar generera ett nytt projektId och uppdatera filePath
 				if (exists) {
 					newProject.id = crypto.randomUUID()
 					filePath = path.join(__dirname, '..', 'data', 'projects', `${newProject.id}.json`)
 				}
+				// uppdatera idExists (för att undvika infinite loops)
 				idExists = exists
 			}
 
 			// Skapa en fil för projektet i /data/projects
 			await fsPromises.writeFile(filePath, JSON.stringify(newProject))
 
-			// Skapa våran respons
+			// Return:a våran respons; vårat nyskapade projekt
 			return newProject
 		},
-		updateProject: (_, args) => {
-			return null
+		updateProject: async (_, args) => {
+			// Hämta alla parametrar från args
+			/* const projectId = args.id
+			const projectName = args.name
+			const projectDescription = args.description */
+
+			const { id, name, description } = args
+
+			// Skapa våran filePath
+			const filePath = path.join(__dirname, '..', 'data', 'projects', `${id}.json`)
+
+			// Finns det projekt som de vill ändra?
+				// IF (no) return Not Found Error
+			const projectExists = await fileExists(filePath)
+			if (!projectExists) return new GraphQLError('That project does not exist')
+
+			// Skapa updatedProject objekt
+			const updatedProject = {
+				id,
+				name, 
+				description
+			}
+
+			// Skriv över den gamla filen med nya infon
+			await fsPromises.writeFile(filePath, JSON.stringify(updatedProject))
+
+			// return updatedProject
+			return updatedProject
 		},
-		deleteProject: (_, args) => {
-			return null
+		deleteProject: async (_, args) => {
+			// get project id
+			const projectId = args.projectId
+
+			const filePath = path.join(__dirname, '..', 'data', 'projects', `${projectId}.json`)
+			// does this project exist?
+			// If no (return error)
+			const projectExists = await fileExists(filePath)
+			if (!projectExists) return new GraphQLError('That project does not exist')
+
+			// delete file
+			try {
+				await fsPromises.unlink(filePath)				
+			} catch (error) {
+				return {
+					deletedId: projectId,
+					success: false
+				}
+			}
+
+			return {
+				deletedId: projectId,
+				success: true
+			}
 		},
 	},
 }
