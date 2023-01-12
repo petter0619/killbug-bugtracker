@@ -55,12 +55,16 @@ exports.resolvers = {
 				description: args.description || ''
 			}
 
-			const filePath = path.join(__dirname, '..', 'data', 'projects', `${newProject.id}.json`)
+			let filePath = path.join(__dirname, '..', 'data', 'projects', `${newProject.id}.json`)
 
 			let idExists = true
 			while (idExists) {
 				const exists = await fileExists(filePath)
 				console.log(exists, newProject.id)
+				if (exists) {
+					newProject.id = crypto.randomUUID()
+					filePath = path.join(__dirname, '..', 'data', 'projects', `${newProject.id}.json`)
+				}
 				idExists = exists
 			}
 
