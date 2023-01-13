@@ -59,4 +59,5 @@ input CreateTicketInput {
 	description: String
 	type: TicketType!
 	priority: TicketPriority
+	projectId: ID!
 }

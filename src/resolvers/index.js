@@ -1,9 +1,10 @@
 const path = require('path')
 const fsPromises = require('fs/promises')
 const { fileExists, readJsonFile, deleteFile, getDirectoryFileNames } = require('../utils/fileHandling')
-const { GraphQLError } = require('graphql')
+const { GraphQLError, printType } = require('graphql')
 const crypto = require('crypto')
 const { ticketType, ticketPriority, ticketStatus } = require('../enums/tickets')
+const axios = require('axios').default
 
 // Create a variable holding the file path (from computer root directory) to the project fiel directory
 const projectDirectory = path.join(__dirname, '..', 'data', 'projects')
@@ -152,14 +153,51 @@ exports.resolvers = {
 			}
 		},
 		createTicket: async (_, args) => {
-			return {
-				id: '123',
-				title: 'Testus',
-				description: 'Valfri',
-				type: ticketType.BUG,
-				priority: ticketPriority.LOW,
-				status: ticketStatus.NEW
+			// Destructure input variables
+			const { title, description, type, priority, projectId } = args.input
+
+			// Skapa filePath till prjektet
+			const filePath = path.join(projectDirectory, `${projectId}.json`)
+
+			// Finns projektet som de vill skapa en ticket för?
+			// IF (no) return Error
+			const projectExists = await fileExists(filePath)
+			if (!projectExists) return new GraphQLError('That project does not exist')
+
+			// Skapa ett JS objekt som motsvarar hur vi vill att 
+			// datan ska läggas in i vårt Sheet
+			// + generate random ID för våran Ticket
+			const newTicket = {
+				id: crypto.randomUUID(),
+				title,
+				description: description || '',
+				type,
+				priority: priority || ticketPriority.LOW,
+				status: ticketStatus.NEW,
+				projectId
 			}
+
+			// POST request till SheetDB API:et = Lägga till en rad för 
+			// denna ticket i vårat sheet
+			try {
+				const endpoint = process.env.SHEETDB_URI
+				const response = await axios.post(endpoint, {
+					data: JSON.stringify(newTicket)
+				}, {
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json',
+						'Accept-Encoding': 'gzip,deflate,compress'
+					}
+				})
+
+			} catch (error) {
+				console.error(error)
+				return new GraphQLError('Could not create the ticket...')
+			}
+
+			// IF (success) return JS objekt som mostvarar våran Ticket type i schemat
+			return newTicket
 		}
 	},
 }

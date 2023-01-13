@@ -1,3 +1,4 @@
+// Enables Node to be able to read our .env variables
 require('dotenv').config()
 const { ApolloServer } = require('@apollo/server')
 const { resolvers } = require('./resolvers')
