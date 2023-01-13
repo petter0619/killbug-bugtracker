@@ -4,42 +4,59 @@ const { fileExists, readJsonFile, deleteFile, getDirectoryFileNames } = require(
 const { GraphQLError } = require('graphql')
 const crypto = require('crypto')
 
+// Create a variable holding the file path (from computer root directory) to the project fiel directory
 const projectDirectory = path.join(__dirname, '..', 'data', 'projects')
 
 exports.resolvers = {
 	Query: {
 		getProjectById: async (_, args) => {
+			// Place the projectId the user sent in a variable called "projectId"
 			const projectId = args.projectId
-			// `../data/projects/${projectId}.json`
+			// Create a variable holding the file path (from computer root directory) to the project
+			// file we are looking for
 			const projectFilePath = path.join(projectDirectory, `${projectId}.json`)
 
+			// Check if the requested project actually exists
 			const projectExists = await fileExists(projectFilePath)
+			// If project does not exist return an error notifying the user of this
 			if (!projectExists) return new GraphQLError('That project does not exist')
 
+			// Read the project file; data will be returned as a JSON string 
 			const projectData = await fsPromises.readFile(projectFilePath, { encoding: 'utf-8' })
+			// Parse the returned JSON project data into a JS object
 			const data = JSON.parse(projectData)
+			// Return the data
 			return data
 		},
 		getAllProjects: async (_, args) => {
+			// Get an array of file names that exist in the projects directory
+			// (aka a list of all the projects we have)
 			const projects = await getDirectoryFileNames(projectDirectory)
 
-			// const projectData = []
+			// Create a variable with an empty array to hold our project data
+			const projectData = []
 
-			/* for (const file of projects) {
-				// console.log(file)
-				const filePath = path.join(projectsDirectory, file)
+			// For each file found in projects...
+			for (const file of projects) {
+				// ... create the filepath for that specific file
+				const filePath = path.join(projectDirectory, file)
+				// Read the contents of the file; will return a JSON string of the project data
 				const fileContents = await fsPromises.readFile(filePath, { encoding: 'utf-8' })
+				// Parse the JSON data from the previous step
 				const data = JSON.parse(fileContents)
+				// Push the parsed data to the projectData array
 				projectData.push(data)
-			} */
+			}
 
-			const promises = []
+			/* const promises = []
 			projects.forEach((fileName) => {
 				const filePath = path.join(projectDirectory, fileName)
 				promises.push(readJsonFile(filePath))
 			})
 
-			const projectData = await Promise.all(promises)
+			const projectData = await Promise.all(promises) */
+
+			// Return the projectData array (which should now hold the data for all our projects)
 			return projectData
 		},
 	},
