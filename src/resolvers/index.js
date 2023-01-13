@@ -3,6 +3,7 @@ const fsPromises = require('fs/promises')
 const { fileExists, readJsonFile, deleteFile, getDirectoryFileNames } = require('../utils/fileHandling')
 const { GraphQLError } = require('graphql')
 const crypto = require('crypto')
+const { ticketType, ticketPriority, ticketStatus } = require('../enums/tickets')
 
 // Create a variable holding the file path (from computer root directory) to the project fiel directory
 const projectDirectory = path.join(__dirname, '..', 'data', 'projects')
@@ -150,5 +151,15 @@ exports.resolvers = {
 				success: true
 			}
 		},
+		createTicket: async (_, args) => {
+			return {
+				id: '123',
+				title: 'Testus',
+				description: 'Valfri',
+				type: ticketType.BUG,
+				priority: ticketPriority.LOW,
+				status: ticketStatus.NEW
+			}
+		}
 	},
 }

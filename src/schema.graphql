@@ -2,7 +2,38 @@ type Project {
 	id: ID
 	name: String
 	description: String
-	# ticket: [Ticket]
+	# ticket: [Ticket] @TODO
+}
+
+type Ticket {
+	id: ID
+	title: String
+	description: String
+	type: TicketType
+	priority: TicketPriority
+	status: TicketStatus
+	# project: Project @TODO
+}
+
+enum TicketType {
+	BUG
+	NEW_FEATURE
+	OTHER
+}
+
+enum TicketPriority {
+	CRITICAL
+	HIGH
+	MEDIUM
+	LOW
+}
+
+enum TicketStatus {
+	NEW
+	IN_DEVELOPMENT
+	IN_REVIEW
+	READY_FOR_TEST
+	COMPLETED
 }
 
 type DeletedResourceResponse {
@@ -19,4 +50,13 @@ type Mutation {
 	createProject(name: String!, description: String): Project
 	updateProject(id: ID!, name: String!, description: String!): Project
 	deleteProject(projectId: ID!): DeletedResourceResponse
+
+	createTicket(input: CreateTicketInput!): Ticket
+}
+
+input CreateTicketInput {
+	title: String!
+	description: String
+	type: TicketType!
+	priority: TicketPriority
 }
