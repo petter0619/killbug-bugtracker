@@ -182,7 +182,9 @@ exports.resolvers = {
 			try {
 				const endpoint = process.env.SHEETDB_URI
 				const response = await axios.post(endpoint, {
-					data: JSON.stringify(newTicket)
+					data: [
+						newTicket
+					]
 				}, {
 					headers: {
 						'Accept': 'application/json',
