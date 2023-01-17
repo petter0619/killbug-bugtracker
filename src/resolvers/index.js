@@ -23,7 +23,7 @@ exports.resolvers = {
 			// If project does not exist return an error notifying the user of this
 			if (!projectExists) return new GraphQLError('That project does not exist')
 
-			// Read the project file; data will be returned as a JSON string 
+			// Read the project file; data will be returned as a JSON string
 			const projectData = await fsPromises.readFile(projectFilePath, { encoding: 'utf-8' })
 			// Parse the returned JSON project data into a JS object
 			const data = JSON.parse(projectData)
@@ -72,7 +72,7 @@ exports.resolvers = {
 				// Generera ett random id (av typ UUID)
 				id: crypto.randomUUID(),
 				name: args.name,
-				description: args.description || ''
+				description: args.description || '',
 			}
 
 			// Skapa filePath för där vi ska skapa våran fil
@@ -110,15 +110,15 @@ exports.resolvers = {
 			const filePath = path.join(projectDirectory, `${id}.json`)
 
 			// Finns det projekt som de vill ändra?
-				// IF (no) return Not Found Error
+			// IF (no) return Not Found Error
 			const projectExists = await fileExists(filePath)
 			if (!projectExists) return new GraphQLError('That project does not exist')
 
 			// Skapa updatedProject objekt
 			const updatedProject = {
 				id,
-				name, 
-				description
+				name,
+				description,
 			}
 
 			// Skriv över den gamla filen med nya infon
@@ -143,13 +143,13 @@ exports.resolvers = {
 			} catch (error) {
 				return {
 					deletedId: projectId,
-					success: false
+					success: false,
 				}
 			}
 
 			return {
 				deletedId: projectId,
-				success: true
+				success: true,
 			}
 		},
 		createTicket: async (_, args) => {
@@ -164,7 +164,7 @@ exports.resolvers = {
 			const projectExists = await fileExists(filePath)
 			if (!projectExists) return new GraphQLError('That project does not exist')
 
-			// Skapa ett JS objekt som motsvarar hur vi vill att 
+			// Skapa ett JS objekt som motsvarar hur vi vill att
 			// datan ska läggas in i vårt Sheet
 			// + generate random ID för våran Ticket
 			const newTicket = {
@@ -174,25 +174,24 @@ exports.resolvers = {
 				type,
 				priority: priority || ticketPriority.LOW,
 				status: ticketStatus.NEW,
-				projectId
+				projectId,
 			}
 
-			// POST request till SheetDB API:et = Lägga till en rad för 
+			// POST request till SheetDB API:et = Lägga till en rad för
 			// denna ticket i vårat sheet
 			try {
 				const endpoint = process.env.SHEETDB_URI
-				const response = await axios.post(endpoint, {
-					data: [
-						newTicket
-					]
-				}, {
-					headers: {
-						'Accept': 'application/json',
-						'Content-Type': 'application/json',
-						'Accept-Encoding': 'gzip,deflate,compress'
+				const response = await axios.post(
+					endpoint,
+					{
+						data: [newTicket],
+					},
+					{
+						headers: {
+							'Accept-Encoding': 'gzip,deflate,compress',
+						},
 					}
-				})
-
+				)
 			} catch (error) {
 				console.error(error)
 				return new GraphQLError('Could not create the ticket...')
@@ -200,6 +199,6 @@ exports.resolvers = {
 
 			// IF (success) return JS objekt som mostvarar våran Ticket type i schemat
 			return newTicket
-		}
+		},
 	},
 }
