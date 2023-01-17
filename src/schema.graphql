@@ -44,6 +44,7 @@ type DeletedResourceResponse {
 type Query {
 	getProjectById(projectId: ID!): Project
 	getAllProjects: [Project]
+	getAllTickets: [Ticket]
 }
 
 type Mutation {

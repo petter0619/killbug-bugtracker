@@ -1,8 +1,7 @@
-
 exports.ticketType = {
-  BUG: 'BUG',
+	BUG: 'BUG',
 	NEW_FEATURE: 'NEW_FEATURE',
-	OTHER: 'OTHER'
+	OTHER: 'OTHER',
 }
 
 exports.ticketPriority = {

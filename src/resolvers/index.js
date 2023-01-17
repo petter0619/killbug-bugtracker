@@ -61,6 +61,19 @@ exports.resolvers = {
 			// Return the projectData array (which should now hold the data for all our projects)
 			return projectData
 		},
+		getAllTickets: async (_) => {
+			let tickets = []
+			try {
+				const response = await axios.get(process.env.SHEETDB_URI)
+				if (response.data?.length > 0) {
+					tickets = response.data
+				}
+			} catch (error) {
+				console.error(error)
+				return new GraphQLError('Ooops... something went wrong!')
+			}
+			return tickets
+		},
 	},
 	Mutation: {
 		createProject: async (_, args) => {
