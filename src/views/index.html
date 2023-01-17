@@ -724,25 +724,45 @@
 				return res.data
 			}
 
-			const createProjectQuery = `mutation CreateProject($input: CreateProjectInput!) {
-        createProject(input: $input) {
-          id
-          name
-        }
-      }`
+			const createProjectQuery = `mutation CreateProject($name: String!, $description: String) {
+				createProject(name: $name, description: $description) {
+					id
+					name
+					description
+				}
+			}`
 
 			const createProjectQueryVars = {
-				input: {
-					name: 'Testus',
-					description: 'Testus project description',
-				},
+				name: 'Testus',
+				description: 'Testus project description',
 			}
 
 			const logoutLink = document.querySelector('#logoutLink')
 
 			logoutLink.addEventListener('click', async (e) => {
 				e.preventDefault()
-				const response = await graphQlQuery('http://localhost:4000/graphql', createProjectQuery, createProjectQueryVars)
+				//const response = await graphQlQuery('/graphql', createProjectQuery, createProjectQueryVars)
+
+				const response = await fetch('/graphql', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						query: `mutation CreateProject($name: String!) {
+							createProject(name: $name) {
+								id
+								name
+								description
+							}
+						}`,
+						variables: {
+							name: 'testus',
+						},
+					}),
+				})
+
+				const data = await response.json()
 
 				console.log(response)
 			})
