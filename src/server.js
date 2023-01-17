@@ -13,6 +13,9 @@ const app = express()
 
 app.use(express.json())
 
+app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'views')))
+
 const port = process.env.PORT || 5000
 async function run() {
 	try {
@@ -30,7 +33,7 @@ async function run() {
 		app.use('/graphql', expressMiddleware(server))
 
 		app.listen(port, () => {
-			console.log(`🚀 Server ready at http://localhost:5000`)
+			console.log(`🚀 Server ready at http://localhost:${port}`)
 		})
 	} catch (error) {
 		console.error(error)

@@ -118,7 +118,7 @@ const onStart = async () => {
 	}
 
 	try {
-		const res = await graphQlQuery('http://localhost:5000/graphql', projectQuery, {
+		const res = await graphQlQuery('http://localhost:4000/graphql', projectQuery, {
 			projectId: projectId,
 		})
 

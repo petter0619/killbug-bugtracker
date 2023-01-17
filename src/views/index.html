@@ -742,7 +742,7 @@
 
 			logoutLink.addEventListener('click', async (e) => {
 				e.preventDefault()
-				const response = await graphQlQuery('http://localhost:5000/graphql', createProjectQuery, createProjectQueryVars)
+				const response = await graphQlQuery('http://localhost:4000/graphql', createProjectQuery, createProjectQueryVars)
 
 				console.log(response)
 			})

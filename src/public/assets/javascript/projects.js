@@ -216,7 +216,7 @@ const projectsQuery = `query Projects {
 
 const fetchProjectsFromGraphQL = async () => {
 	try {
-		const res = await graphQlQuery('http://localhost:5000/graphql', projectsQuery)
+		const res = await graphQlQuery('http://localhost:4000/graphql', projectsQuery)
 		const fetchedData = res.data?.projects.map((projectData) => {
 			return {
 				projectId: projectData.id,
