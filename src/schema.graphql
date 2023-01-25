@@ -53,6 +53,7 @@ type Mutation {
 	deleteProject(projectId: ID!): DeletedResourceResponse
 
 	createTicket(input: CreateTicketInput!): Ticket
+	deleteTicket(ticketId: ID!): DeletedResourceResponse
 }
 
 input CreateTicketInput {

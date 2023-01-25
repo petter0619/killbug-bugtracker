@@ -65,6 +65,7 @@ exports.resolvers = {
 			let tickets = []
 			try {
 				const response = await axios.get(process.env.SHEETDB_URI)
+
 				if (response.data?.length > 0) {
 					tickets = response.data
 				}
@@ -212,6 +213,26 @@ exports.resolvers = {
 
 			// IF (success) return JS objekt som mostvarar våran Ticket type i schemat
 			return newTicket
+		},
+		deleteTicket: async (_, args) => {
+			const ticketId = args.ticketId
+
+			try {
+				const endpoint = `${process.env.SHEETDB_URI}/id/${ticketId}`
+
+				const response = await axios.delete(endpoint)
+
+				return {
+					deletedId: ticketId,
+					success: true,
+				}
+			} catch (error) {
+				console.error(error)
+				return {
+					deletedId: ticketId,
+					success: false,
+				}
+			}
 		},
 	},
 }
