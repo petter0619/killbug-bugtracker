@@ -1,9 +1,23 @@
+# --------------- PROJECT ---------------
 type Project {
 	id: ID
 	name: String
 	description: String
 	# ticket: [Ticket] @TODO
 }
+
+#type ProjectTicketItem {
+#	id: ID!
+#	title: String
+#	description: String
+#	type: TicketType
+#	priority: TicketPriority
+#	status: TicketStatus
+#}
+
+# --------------- ./projects ---------------
+
+# --------------- TICKET ---------------
 
 type Ticket {
 	id: ID
@@ -14,6 +28,12 @@ type Ticket {
 	status: TicketStatus
 	# project: Project @TODO
 }
+
+#type TicketProjectItem {
+#	id: ID!
+#	name: String
+#	description: String
+#}
 
 enum TicketType {
 	BUG
@@ -36,6 +56,8 @@ enum TicketStatus {
 	COMPLETED
 }
 
+# --------------- ./tickets ---------------
+
 type DeletedResourceResponse {
 	deletedId: ID
 	success: Boolean
@@ -43,8 +65,8 @@ type DeletedResourceResponse {
 
 type Query {
 	getProjectById(projectId: ID!): Project
-	getAllProjects: [Project]
-	getAllTickets: [Ticket]
+	getAllProjects(take: Int, skip: Int): [Project]
+	getAllTickets(take: Int, skip: Int, filters: TicketFilterInput): [Ticket]
 }
 
 type Mutation {
@@ -56,6 +78,8 @@ type Mutation {
 	deleteTicket(ticketId: ID!): DeletedResourceResponse
 }
 
+# --------------- INPUTS ---------------
+
 input CreateTicketInput {
 	title: String!
 	description: String
@@ -63,3 +87,12 @@ input CreateTicketInput {
 	priority: TicketPriority
 	projectId: ID!
 }
+
+input TicketFilterInput {
+	projectId: ID
+	status: TicketStatus
+	type: TicketType
+	priority: TicketPriority
+}
+
+# --------------- ./inputs ---------------

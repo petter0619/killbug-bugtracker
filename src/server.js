@@ -5,16 +5,7 @@ const { resolvers } = require('./resolvers')
 const { loadFiles } = require('@graphql-tools/load-files')
 const { makeExecutableSchema } = require('@graphql-tools/schema')
 const path = require('path')
-// const { startStandaloneServer } = require('@apollo/server/standalone')
-const { expressMiddleware } = require('@apollo/server/express4')
-const express = require('express')
-
-const app = express()
-
-app.use(express.json())
-
-app.use(express.static(path.join(__dirname, 'public')))
-app.use(express.static(path.join(__dirname, 'views')))
+const { startStandaloneServer } = require('@apollo/server/standalone')
 
 const port = process.env.PORT || 5000
 async function run() {
@@ -25,16 +16,12 @@ async function run() {
 		const schema = makeExecutableSchema({ typeDefs: typeDefs, resolvers: resolvers })
 		// Creates a GraphQL server from our schema
 		const server = new ApolloServer({ schema: schema })
-		// Starts the server in
-		// const res = await startStandaloneServer(server)
-		// console.log(`🚀 Server ready at ${res.url}`)
-		await server.start()
-
-		app.use('/graphql', expressMiddleware(server))
-
-		app.listen(port, () => {
-			console.log(`🚀 Server ready at http://localhost:${port}`)
+		// Starts the server (NOTE: the second argument setsup a custom port)
+		const res = await startStandaloneServer(server, {
+			// @ts-ignore
+			listen: { port },
 		})
+		console.log(`🚀 Server ready at ${res.url}graphql`)
 	} catch (error) {
 		console.error(error)
 	}
