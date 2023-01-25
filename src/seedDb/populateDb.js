@@ -42,13 +42,13 @@ const populateDbWithMockData = async (connectionString) => {
 		const ticketRes = await Ticket.create(ticketsToCreate)
 
 		// @ts-ignore
-		for (const project of projectRes) {
+		/* for (const project of projectRes) {
 			const tickets = ticketRes.filter((ticket) => project._id.equals(ticket.project)).map((ticket) => ticket._id)
 
 			await Project.findByIdAndUpdate(project._id, {
 				tickets: tickets,
 			})
-		}
+		} */
 
 		console.log('Database successfully populated with test data')
 	} catch (error) {

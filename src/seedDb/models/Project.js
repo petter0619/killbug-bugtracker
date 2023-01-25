@@ -13,10 +13,10 @@ const ProjectSchema = new mongoose.Schema(
 			type: String,
 			trim: true,
 		},
-		tickets: {
+		/* tickets: {
 			type: [mongoose.Schema.Types.ObjectId],
 			ref: 'Ticket',
-		},
+		}, */
 	},
 	{ timestamps: true }
 )
