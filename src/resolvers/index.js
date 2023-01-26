@@ -195,21 +195,11 @@ exports.resolvers = {
 		deleteTicket: async (_, args) => {
 			const ticketId = args.ticketId
 
-			try {
-				const endpoint = `${process.env.SHEETDB_URI}/id/${ticketId}`
+			const deletedTicket = await Ticket.findByIdAndDelete(ticketId)
 
-				const response = await axios.delete(endpoint)
-
-				return {
-					deletedId: ticketId,
-					success: true,
-				}
-			} catch (error) {
-				console.error(error)
-				return {
-					deletedId: ticketId,
-					success: false,
-				}
+			return {
+				deletedId: ticketId,
+				success: Boolean(deletedTicket),
 			}
 		},
 		updateTicket: async (_, args) => {
