@@ -190,7 +190,7 @@ exports.resolvers = {
 				project: projectId,
 			})
 
-			return newTicket.populate('project')
+			return await newTicket.populate('project')
 		},
 		deleteTicket: async (_, args) => {
 			const ticketId = args.ticketId
@@ -203,7 +203,11 @@ exports.resolvers = {
 			}
 		},
 		updateTicket: async (_, args) => {
-			return null
+			const updatedTicket = await Ticket.findByIdAndUpdate(args.ticketId, args.input, { new: true })
+
+			if (!updatedTicket) return new GraphQLError('That ticket does not exist...')
+
+			return await updatedTicket.populate('project')
 		},
 	},
 }

@@ -77,7 +77,7 @@ type Mutation {
 	deleteProject(projectId: ID!): DeletedResourceResponse
 
 	createTicket(input: CreateTicketInput!): Ticket
-	updateTicket(ticketId: ID!, input: UpdateTicketInput): Ticket
+	updateTicket(ticketId: ID!, input: UpdateTicketInput!): Ticket
 	deleteTicket(ticketId: ID!): DeletedResourceResponse
 }
 
