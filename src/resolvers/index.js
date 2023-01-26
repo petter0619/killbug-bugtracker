@@ -234,5 +234,8 @@ exports.resolvers = {
 				}
 			}
 		},
+		updateTicket: async (_, args) => {
+			return null
+		},
 	},
 }

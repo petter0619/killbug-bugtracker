@@ -75,6 +75,7 @@ type Mutation {
 	deleteProject(projectId: ID!): DeletedResourceResponse
 
 	createTicket(input: CreateTicketInput!): Ticket
+	updateTicket(ticketId: ID!, input: UpdateTicketInput)
 	deleteTicket(ticketId: ID!): DeletedResourceResponse
 }
 
@@ -93,6 +94,14 @@ input TicketFilterInput {
 	status: TicketStatus
 	type: TicketType
 	priority: TicketPriority
+}
+
+input UpdateTicketInput {
+	title: String
+	description: String
+	type: TicketType
+	priority: TicketPriority
+	status: TicketStatus
 }
 
 # --------------- ./inputs ---------------
