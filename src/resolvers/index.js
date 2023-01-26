@@ -6,77 +6,42 @@ const crypto = require('crypto')
 const { ticketType, ticketPriority, ticketStatus } = require('../enums/tickets')
 const axios = require('axios').default
 
+const Project = require('../models/Project')
+const Ticket = require('../models/Ticket')
+
 // Create a variable holding the file path (from computer root directory) to the project fiel directory
 const projectDirectory = path.join(__dirname, '..', 'data', 'projects')
 
 exports.resolvers = {
 	Query: {
 		getProjectById: async (_, args) => {
-			// Place the projectId the user sent in a variable called "projectId"
-			const projectId = args.projectId
-			// Create a variable holding the file path (from computer root directory) to the project
-			// file we are looking for
-			const projectFilePath = path.join(projectDirectory, `${projectId}.json`)
-
-			// Check if the requested project actually exists
-			const projectExists = await fileExists(projectFilePath)
-			// If project does not exist return an error notifying the user of this
-			if (!projectExists) return new GraphQLError('That project does not exist')
-
-			// Read the project file; data will be returned as a JSON string
-			const projectData = await fsPromises.readFile(projectFilePath, { encoding: 'utf-8' })
-			// Parse the returned JSON project data into a JS object
-			const data = JSON.parse(projectData)
-			// Return the data
-			return data
+			const project = await Project.findById(args.projectId)
+			return project
 		},
 		getAllProjects: async (_, args) => {
-			// Get an array of file names that exist in the projects directory
-			// (aka a list of all the projects we have)
-			const projects = await getDirectoryFileNames(projectDirectory)
-
-			// Create a variable with an empty array to hold our project data
-			const projectData = []
-
-			// For each file found in projects...
-			for (const file of projects) {
-				// ... create the filepath for that specific file
-				const filePath = path.join(projectDirectory, file)
-				// Read the contents of the file; will return a JSON string of the project data
-				const fileContents = await fsPromises.readFile(filePath, { encoding: 'utf-8' })
-				// Parse the JSON data from the previous step
-				const data = JSON.parse(fileContents)
-				// Push the parsed data to the projectData array
-				projectData.push(data)
-			}
-
-			/* const promises = []
-			projects.forEach((fileName) => {
-				const filePath = path.join(projectDirectory, fileName)
-				promises.push(readJsonFile(filePath))
-			})
-
-			const projectData = await Promise.all(promises) */
-
-			// Return the projectData array (which should now hold the data for all our projects)
+			const take = args.take || 0
+			const skip = args.skip || 0
+			const projectData = await Project.find().limit(take).skip(skip)
 			return projectData
 		},
-		getAllTickets: async (_) => {
-			let tickets = []
-			try {
-				const response = await axios.get(process.env.SHEETDB_URI)
+		getAllTickets: async (_, args) => {
+			const take = args.take || 0
+			const skip = args.skip || 0
 
-				if (response.data?.length > 0) {
-					tickets = response.data
-				}
-			} catch (error) {
-				console.error(error)
-				return new GraphQLError('Ooops... something went wrong!')
-			}
+			const { projectId, type, status, priority } = args.filters
+			const filters = {}
+
+			if (projectId) filters.project = projectId
+			if (type) filters.type = type
+			if (status) filters.status = status
+			if (priority) filters.priority = priority
+
+			const tickets = await Ticket.find(filters).limit(take).skip(skip)
 			return tickets
 		},
 		getTicketById: async (_, args) => {
-			return null
+			const ticket = await Ticket.findById(args.ticketId)
+			return ticket
 		},
 	},
 	Mutation: {

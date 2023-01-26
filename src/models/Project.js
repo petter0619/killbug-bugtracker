@@ -5,20 +5,17 @@ const ProjectSchema = new mongoose.Schema(
 		name: {
 			type: String,
 			required: true,
-			minlength: 3,
-			maxlength: 100,
-			trim: true,
+			minLength: 3,
+			maxLength: 50,
 		},
 		description: {
 			type: String,
-			trim: true,
+			maxLength: 500,
 		},
-		/* tickets: {
-			type: [mongoose.Schema.Types.ObjectId],
-			ref: 'Ticket',
-		}, */
 	},
-	{ timestamps: true }
+	{
+		timestamps: true,
+	}
 )
 
 module.exports = mongoose.model('Project', ProjectSchema)
