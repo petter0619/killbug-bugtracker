@@ -162,52 +162,35 @@ exports.resolvers = {
 			}
 		},
 		createTicket: async (_, args) => {
-			// Destructure input variables
-			const { title, description, type, priority, projectId } = args.input
+			// const { title, description, type, priority, projectId } = args.input
+			const { projectId } = args.input
 
-			// Skapa filePath till prjektet
-			const filePath = path.join(projectDirectory, `${projectId}.json`)
+			const project = await Project.findById(projectId)
+			if (!project) return new GraphQLError('That project does not exist')
 
-			// Finns projektet som de vill skapa en ticket för?
-			// IF (no) return Error
-			const projectExists = await fileExists(filePath)
-			if (!projectExists) return new GraphQLError('That project does not exist')
-
-			// Skapa ett JS objekt som motsvarar hur vi vill att
-			// datan ska läggas in i vårt Sheet
-			// + generate random ID för våran Ticket
-			const newTicket = {
-				id: crypto.randomUUID(),
+			/* 
+			const newTicket = await Ticket.create({
 				title,
-				description: description || '',
+				description,
 				type,
-				priority: priority || ticketPriority.LOW,
-				status: ticketStatus.NEW,
-				projectId,
-			}
+				priority,
+				project: projectId,
+			}) 
+			*/
 
-			// POST request till SheetDB API:et = Lägga till en rad för
-			// denna ticket i vårat sheet
-			try {
-				const endpoint = process.env.SHEETDB_URI
-				const response = await axios.post(
-					endpoint,
-					{
-						data: [newTicket],
-					},
-					{
-						headers: {
-							'Accept-Encoding': 'gzip,deflate,compress',
-						},
-					}
-				)
-			} catch (error) {
-				console.error(error)
-				return new GraphQLError('Could not create the ticket...')
-			}
+			/* 
+			const ticketData = { ...args.input }
+			delete ticketData.projectId
+			ticketData.project = projectId
+			const newTicket = await Ticket.create(ticketData)
+			*/
 
-			// IF (success) return JS objekt som mostvarar våran Ticket type i schemat
-			return newTicket
+			const newTicket = await Ticket.create({
+				...args.input,
+				project: projectId,
+			})
+
+			return newTicket.populate('project')
 		},
 		deleteTicket: async (_, args) => {
 			const ticketId = args.ticketId
