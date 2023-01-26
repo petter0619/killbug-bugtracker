@@ -16,31 +16,58 @@ exports.resolvers = {
 	Query: {
 		getProjectById: async (_, args) => {
 			const project = await Project.findById(args.projectId)
-			return project
+
+			const projectTickets = await Ticket.find({
+				project: project._id,
+			})
+
+			const returnProject = {
+				id: project._id,
+				name: project.name,
+				description: project.description,
+				tickets: projectTickets,
+			}
+
+			return returnProject
 		},
 		getAllProjects: async (_, args) => {
 			const take = args.take || 0
 			const skip = args.skip || 0
-			const projectData = await Project.find().limit(take).skip(skip)
+			const projects = await Project.find().limit(take).skip(skip)
+
+			const projectIds = projects.map((project) => project._id)
+
+			const tickets = await Ticket.find({
+				project: { $in: projectIds },
+			})
+
+			const projectData = projects.map((project) => {
+				return {
+					id: project._id,
+					name: project.name,
+					description: project.description,
+					tickets: tickets.filter((ticket) => ticket.project.equals(project._id)),
+				}
+			})
+
 			return projectData
 		},
 		getAllTickets: async (_, args) => {
 			const take = args.take || 0
 			const skip = args.skip || 0
 
-			const { projectId, type, status, priority } = args.filters
 			const filters = {}
 
-			if (projectId) filters.project = projectId
-			if (type) filters.type = type
-			if (status) filters.status = status
-			if (priority) filters.priority = priority
+			if (args.filters?.projectId) filters.project = args.filters.projectId
+			if (args.filters?.type) filters.type = args.filters.type
+			if (args.filters?.status) filters.status = args.filters.status
+			if (args.filters?.priority) filters.priority = args.filters.priority
 
-			const tickets = await Ticket.find(filters).limit(take).skip(skip)
+			const tickets = await Ticket.find(filters).limit(take).skip(skip).populate('project')
 			return tickets
 		},
 		getTicketById: async (_, args) => {
-			const ticket = await Ticket.findById(args.ticketId)
+			const ticket = await Ticket.findById(args.ticketId).populate('project')
 			return ticket
 		},
 	},

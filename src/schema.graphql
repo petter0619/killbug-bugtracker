@@ -3,17 +3,17 @@ type Project {
 	id: ID
 	name: String
 	description: String
-	# ticket: [Ticket] @TODO
+	tickets: [ProjectTicketItem]
 }
 
-#type ProjectTicketItem {
-#	id: ID!
-#	title: String
-#	description: String
-#	type: TicketType
-#	priority: TicketPriority
-#	status: TicketStatus
-#}
+type ProjectTicketItem {
+	id: ID!
+	title: String
+	description: String
+	type: TicketType
+	priority: TicketPriority
+	status: TicketStatus
+}
 
 # --------------- ./projects ---------------
 
@@ -26,14 +26,14 @@ type Ticket {
 	type: TicketType
 	priority: TicketPriority
 	status: TicketStatus
-	# project: Project @TODO
+	project: TicketProjectItem
 }
 
-#type TicketProjectItem {
-#	id: ID!
-#	name: String
-#	description: String
-#}
+type TicketProjectItem {
+	id: ID!
+	name: String
+	description: String
+}
 
 enum TicketType {
 	BUG
