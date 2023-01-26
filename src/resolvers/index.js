@@ -75,6 +75,9 @@ exports.resolvers = {
 			}
 			return tickets
 		},
+		getTicketById: async (_, args) => {
+			return null
+		},
 	},
 	Mutation: {
 		createProject: async (_, args) => {
