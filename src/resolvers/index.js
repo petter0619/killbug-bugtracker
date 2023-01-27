@@ -106,27 +106,11 @@ exports.resolvers = {
 			return updatedProject
 		},
 		deleteProject: async (_, args) => {
-			// get project id
-			const projectId = args.projectId
-
-			const filePath = path.join(projectDirectory, `${projectId}.json`)
-			// does this project exist?
-			// If no (return error)
-			const projectExists = await fileExists(filePath)
-			if (!projectExists) return new GraphQLError('That project does not exist')
-
-			// delete file
-			try {
-				await deleteFile(filePath)
-			} catch (error) {
-				return {
-					deletedId: projectId,
-					success: false,
-				}
-			}
+			const deletedProject = await Project.findByIdAndDelete(args.projectId)
+			if (!deletedProject) return new GraphQLError('That project does not exist')
 
 			return {
-				deletedId: projectId,
+				deletedId: deletedProject._id,
 				success: true,
 			}
 		},
