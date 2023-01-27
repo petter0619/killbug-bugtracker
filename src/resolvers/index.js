@@ -73,38 +73,7 @@ exports.resolvers = {
 	},
 	Mutation: {
 		createProject: async (_, args) => {
-			// Verify name: om strängen är tom, return:a en error
-			if (args.name.length === 0) return new GraphQLError('Name must be at least 1 character long')
-
-			// Skapa ett unikt id + data objektet
-			const newProject = {
-				// Generera ett random id (av typ UUID)
-				id: crypto.randomUUID(),
-				name: args.name,
-				description: args.description || '',
-			}
-
-			// Skapa filePath för där vi ska skapa våran fil
-			let filePath = path.join(projectDirectory, `${newProject.id}.json`)
-
-			// Kolla att vårat auto-genererade projektid inte har använts förut
-			let idExists = true
-			while (idExists) {
-				const exists = await fileExists(filePath) // kolla om filen existerar
-				console.log(exists, newProject.id)
-				// om filen redan existerar generera ett nytt projektId och uppdatera filePath
-				if (exists) {
-					newProject.id = crypto.randomUUID()
-					filePath = path.join(projectDirectory, `${newProject.id}.json`)
-				}
-				// uppdatera idExists (för att undvika infinite loops)
-				idExists = exists
-			}
-
-			// Skapa en fil för projektet i /data/projects
-			await fsPromises.writeFile(filePath, JSON.stringify(newProject))
-
-			// Return:a våran respons; vårat nyskapade projekt
+			const newProject = await Project.create({ ...args })
 			return newProject
 		},
 		updateProject: async (_, args) => {
