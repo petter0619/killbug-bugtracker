@@ -57,14 +57,18 @@ exports.resolvers = {
 			const take = args.take || 0
 			const skip = args.skip || 0
 
-			const filters = {}
+			const filtersObj = {}
 
-			if (args.filters?.projectId) filters.project = args.filters.projectId
-			if (args.filters?.type) filters.type = args.filters.type
-			if (args.filters?.status) filters.status = args.filters.status
-			if (args.filters?.priority) filters.priority = args.filters.priority
+			if (args.filter) {
+				const { projectId, type, status, priority } = args.filters
 
-			const tickets = await Ticket.find(filters).limit(take).skip(skip).populate('project')
+				if (projectId) filtersObj.project = projectId
+				if (type) filtersObj.type = type
+				if (status) filtersObj.status = status
+				if (priority) filtersObj.priority = priority
+			}
+
+			const tickets = await Ticket.find(filtersObj).limit(take).skip(skip).populate('project')
 			return tickets
 		},
 		getTicketById: async (_, args) => {
