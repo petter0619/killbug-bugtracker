@@ -1,14 +1,7 @@
 const path = require('path')
-const fsPromises = require('fs/promises')
-const { fileExists, readJsonFile, deleteFile, getDirectoryFileNames } = require('../utils/fileHandling')
-const { GraphQLError, printType } = require('graphql')
-const crypto = require('crypto')
-const { ticketType, ticketPriority, ticketStatus } = require('../enums/tickets')
-const axios = require('axios').default
-
+const { GraphQLError } = require('graphql')
 const Project = require('../models/Project')
 const Ticket = require('../models/Ticket')
-const { findByIdAndUpdate } = require('../models/Project')
 
 // Create a variable holding the file path (from computer root directory) to the project fiel directory
 const projectDirectory = path.join(__dirname, '..', 'data', 'projects')
