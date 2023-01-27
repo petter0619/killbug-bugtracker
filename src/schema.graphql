@@ -73,7 +73,7 @@ type Query {
 
 type Mutation {
 	createProject(name: String!, description: String): Project
-	updateProject(id: ID!, name: String!, description: String!): Project
+	updateProject(projectId: ID!, name: String!, description: String!): TicketProjectItem
 	deleteProject(projectId: ID!): DeletedResourceResponse
 
 	createTicket(input: CreateTicketInput!): Ticket

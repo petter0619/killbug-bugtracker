@@ -8,6 +8,7 @@ const axios = require('axios').default
 
 const Project = require('../models/Project')
 const Ticket = require('../models/Ticket')
+const { findByIdAndUpdate } = require('../models/Project')
 
 // Create a variable holding the file path (from computer root directory) to the project fiel directory
 const projectDirectory = path.join(__dirname, '..', 'data', 'projects')
@@ -77,32 +78,13 @@ exports.resolvers = {
 			return newProject
 		},
 		updateProject: async (_, args) => {
-			// Hämta alla parametrar från args
-			/* const projectId = args.id
-			const projectName = args.name
-			const projectDescription = args.description */
+			const projectToUpdate = await Project.findById(args.projectId)
 
-			const { id, name, description } = args
+			if (!projectToUpdate) return new GraphQLError('That project does not exist')
 
-			// Skapa våran filePath
-			const filePath = path.join(projectDirectory, `${id}.json`)
-
-			// Finns det projekt som de vill ändra?
-			// IF (no) return Not Found Error
-			const projectExists = await fileExists(filePath)
-			if (!projectExists) return new GraphQLError('That project does not exist')
-
-			// Skapa updatedProject objekt
-			const updatedProject = {
-				id,
-				name,
-				description,
-			}
-
-			// Skriv över den gamla filen med nya infon
-			await fsPromises.writeFile(filePath, JSON.stringify(updatedProject))
-
-			// return updatedProject
+			projectToUpdate.name = args.name
+			projectToUpdate.description = args.description
+			const updatedProject = await projectToUpdate.save()
 			return updatedProject
 		},
 		deleteProject: async (_, args) => {
