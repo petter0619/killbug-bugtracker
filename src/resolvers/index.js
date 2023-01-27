@@ -1,10 +1,6 @@
-const path = require('path')
 const { GraphQLError } = require('graphql')
 const Project = require('../models/Project')
 const Ticket = require('../models/Ticket')
-
-// Create a variable holding the file path (from computer root directory) to the project fiel directory
-const projectDirectory = path.join(__dirname, '..', 'data', 'projects')
 
 exports.resolvers = {
 	Query: {
