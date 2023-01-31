@@ -1,11 +1,31 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
-const Project = require('../models/Project')
-const Ticket = require('../models/Ticket')
+const Project = require('../src/models/Project')
+const Ticket = require('../src/models/Ticket')
 const { mockProjectData } = require('./projects')
-const { ticketPriority, ticketStatus, ticketType } = require('../enums/tickets')
 const { faker } = require('@faker-js/faker')
-const { randomItemFromArray, capitalizeFirstLetter, getRandomBetween } = require('../utils/utils')
+const { randomItemFromArray, capitalizeFirstLetter, getRandomBetween } = require('./seedDbUtils')
+
+const ticketType = {
+	BUG: 'BUG',
+	NEW_FEATURE: 'NEW_FEATURE',
+	OTHER: 'OTHER',
+}
+
+const ticketPriority = {
+	CRITICAL: 'CRITICAL',
+	HIGH: 'HIGH',
+	MEDIUM: 'MEDIUM',
+	LOW: 'LOW',
+}
+
+const ticketStatus = {
+	NEW: 'NEW',
+	IN_DEVELOPMENT: 'IN_DEVELOPMENT',
+	IN_REVIEW: 'IN_REVIEW',
+	READY_FOR_TEST: 'READY_FOR_TEST',
+	COMPLETED: 'COMPLETED',
+}
 
 const createMockTicket = (projectId) => {
 	return {
@@ -44,7 +64,6 @@ const populateDbWithMockData = async (connectionString) => {
 		// @ts-ignore
 		/* for (const project of projectRes) {
 			const tickets = ticketRes.filter((ticket) => project._id.equals(ticket.project)).map((ticket) => ticket._id)
-
 			await Project.findByIdAndUpdate(project._id, {
 				tickets: tickets,
 			})

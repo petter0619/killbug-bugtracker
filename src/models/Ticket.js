@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const { ticketType, ticketPriority, ticketStatus } = require('../enums/tickets')
 
 const TicketSchema = new mongoose.Schema(
 	{
@@ -15,21 +14,21 @@ const TicketSchema = new mongoose.Schema(
 		},
 		type: {
 			type: String,
-			enum: Object.values(ticketType),
+			enum: ['BUG', 'NEW_FEATURE', 'OTHER'],
 			required: true,
 			uppercase: true,
 		},
 		priority: {
 			type: String,
-			enum: Object.values(ticketPriority),
+			enum: ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'],
 			uppercase: true,
-			default: ticketPriority.LOW,
+			default: 'LOW',
 		},
 		status: {
 			type: String,
-			enum: Object.values(ticketStatus),
+			enum: ['NEW', 'IN_DEVELOPMENT', 'IN_REVIEW', 'COMPLETED', 'READY_FOR_TEST'],
 			uppercase: true,
-			default: ticketStatus.NEW,
+			default: 'NEW',
 		},
 		project: {
 			type: mongoose.Schema.Types.ObjectId,
