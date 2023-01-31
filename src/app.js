@@ -112,7 +112,7 @@ app.post('/api/v1/projects', async (req, res) => {
       // Location header = URI pointing to endpoint where user can get new project
       .setHeader(
         'Location', 
-        `http://localhost:5000/api/v1/projects/${newProject._id}`
+        `http://localhost:${process.env.PORT}/api/v1/projects/${newProject._id}`
       )
       .status(201)
       .json(newProject)
@@ -127,6 +127,27 @@ app.post('/api/v1/projects', async (req, res) => {
 
 // PUT /api/v1/projects/:projectId - Update project (by id)
 // DELETE /api/v1/projects/:projectId - Delete project (by id)
+app.delete('/api/v1/projects/:projectId', async (req, res) => {
+	try {
+		// Get project id and place in local variable
+		const projectId = req.params.projectId
+		// Check if project exists
+		const projectToDelete = await Project.findById(projectId)
+		// IF (no project) return Not Found
+		if (!projectToDelete) return res.sendStatus(404)
+
+		// Delete project
+		await projectToDelete.delete()
+
+		// Craft our response
+		return res.sendStatus(204)
+	} catch (error) {
+		console.error(error)
+		return res.status(500).json({
+			message: error.message,
+		})
+	}
+})
 
 /* ------- 2) Start server ------- */
 const port = process.env.PORT || 5000
