@@ -5,8 +5,8 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "nodemon ./src/server.js",
-		"seedDb": "node ./src/seedDb/populateDb.js"
+		"dev": "nodemon ./src/app.js",
+		"seedDb": "node ./seedDb/seedDb.js"
 	},
 	"repository": {
 		"type": "git",
@@ -25,12 +25,8 @@
 		"prettier": "2.8.2"
 	},
 	"dependencies": {
-		"@apollo/server": "^4.3.0",
-		"@graphql-tools/load-files": "^6.6.1",
-		"@graphql-tools/schema": "^9.0.12",
-		"axios": "^1.2.2",
 		"dotenv": "^16.0.3",
-		"graphql": "^16.6.0",
+		"express": "^4.18.2",
 		"mongoose": "^6.8.4"
 	}
 }
