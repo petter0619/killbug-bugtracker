@@ -7,6 +7,9 @@ const Project = require('./models/Project')
 const app = express()
 
 /* ------- 3) Sätt upp våran middleware ------- */
+// Parse JSON on request body and place on req.body
+app.use(express.json())
+
 app.use((req, res, next) => {
 	console.log(`Processing ${req.method} request to ${req.path}`)
 	// when above code executed; go on to next middleware/routing
@@ -83,6 +86,45 @@ app.get('/api/v1/projects/:projectId', async (req, res) => {
 })
 
 // POST /api/v1/projects - Create new project
+app.post('/api/v1/projects', async (req, res) => {
+	try {
+		// Get data from req.body and place in local variables
+		const name = req.body.name || ''
+		const description = req.body.description || ''
+
+		// If (no name || name is empty string) respond bad request
+		if (!name) {
+			return res.status(400).json({
+				message: 'You must provide a project name',
+			})
+		}
+
+		// Create project
+		const newProject = await Project.create({
+			name: name,
+			description: description,
+		})
+
+		// Respond
+		// prettier-ignore
+		return res
+      // Add Location header to response
+      // Location header = URI pointing to endpoint where user can get new project
+      .setHeader(
+        'Location', 
+        `http://localhost:5000/api/v1/projects/${newProject._id}`
+      )
+      .status(201)
+      .json(newProject)
+	} catch (error) {
+		console.error(error)
+		// Send the following response if error occurred
+		return res.status(500).json({
+			message: error.message,
+		})
+	}
+})
+
 // PUT /api/v1/projects/:projectId - Update project (by id)
 // DELETE /api/v1/projects/:projectId - Delete project (by id)
 
