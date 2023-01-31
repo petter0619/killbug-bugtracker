@@ -59,6 +59,29 @@ app.get('/api/v1/projects', async (req, res) => {
 })
 
 // GET /api/v1/projects/:projectId - Get project by id
+app.get('/api/v1/projects/:projectId', async (req, res) => {
+	// Big outer try-catch
+	try {
+		// Get our project id (put in local variable)
+		const projectId = req.params.projectId
+
+		// Find project with that id
+		const project = await Project.findById(projectId)
+
+		// IF(no project) return 404
+		if (!project) return res.sendStatus(404)
+
+		// respond with project data (200 OK)
+		return res.json(project)
+	} catch (error) {
+		console.error(error)
+		// Send the following response if error occurred
+		return res.status(500).json({
+			message: error.message,
+		})
+	}
+})
+
 // POST /api/v1/projects - Create new project
 // PUT /api/v1/projects/:projectId - Update project (by id)
 // DELETE /api/v1/projects/:projectId - Delete project (by id)
