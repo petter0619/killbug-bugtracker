@@ -126,6 +126,42 @@ app.post('/api/v1/projects', async (req, res) => {
 })
 
 // PUT /api/v1/projects/:projectId - Update project (by id)
+app.put('/api/v1/projects/:projectId', async (req, res) => {
+	try {
+		// Place project id in local variable
+		const projectId = req.params.projectId
+
+		// Place name and description from req.body in local variables
+		const { name, description } = req.body
+
+		// If no name && description respond with Bad Request
+		if (!name && !description) {
+			return res.status(400).json({
+				message: 'You must provide a name or a description to update...',
+			})
+		}
+
+		// Get project
+		const projectToUpdate = await Project.findById(projectId)
+
+		// If (no project) respond with Not Found
+		if (!projectToUpdate) return res.sendStatus(404)
+
+		// Update project
+		if (name) projectToUpdate.name = name
+		if (description) projectToUpdate.description = description
+		const updatedProject = await projectToUpdate.save()
+
+		// Craft response (return updated project)
+		return res.json(updatedProject)
+	} catch (error) {
+		console.error(error)
+		return res.status(500).json({
+			message: error.message,
+		})
+	}
+})
+
 // DELETE /api/v1/projects/:projectId - Delete project (by id)
 app.delete('/api/v1/projects/:projectId', async (req, res) => {
 	try {
