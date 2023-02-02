@@ -1,37 +1,37 @@
 const Project = require('../models/Project')
 
 exports.getAllProjects = async (req, res, next) => {
-	throw new Error('Oh nooooooooo!')
 	/* 
-      Get only number of projects specified in "limit" query
-      parameter. Default limit is 10 (aka unless told otherwise
-      only get 10 projects at a time)
-    
-		const limit = Number(req.query?.limit || 10)
-		/* 
-      Skip the number of projects specified in the "offset"
-      query parameter according to default project sorting. 
-      If no offset given, default is 0 (aka start from the
-      beginning)
-    
-		const offset = Number(req.query?.offset || 0)
+    Get only number of projects specified in "limit" query
+    parameter. Default limit is 10 (aka unless told otherwise
+    only get 10 projects at a time)
+  */
+	const limit = Number(req.query?.limit || 10)
 
-		// Get all projects; filter according to "limit" and "offset" query params
-		const projects = await Project.find().limit(limit).skip(offset)
-		// Get total number of projects available in database
-		const totalProjectsInDatabase = await Project.countDocuments()
-		// Create and send our response
-		return res.json({
-			data: projects, // Send projects result
-			meta: {
-				// meta information about request
-				total: totalProjectsInDatabase, // Total num projects available in db
-				limit: limit, // Num of projects asked for
-				offset: offset, // Num or projects asked to skip
-				count: projects.length, // Num of projects sent back
-			},
-		})
-		// Catch any unforseen errors */
+	/* 
+    Skip the number of projects specified in the "offset"
+    query parameter according to default project sorting. 
+    If no offset given, default is 0 (aka start from the
+    beginning)
+	*/
+	const offset = Number(req.query?.offset || 0)
+
+	// Get all projects; filter according to "limit" and "offset" query params
+	const projects = await Project.find().limit(limit).skip(offset)
+	// Get total number of projects available in database
+	const totalProjectsInDatabase = await Project.countDocuments()
+	// Create and send our response
+	return res.json({
+		data: projects, // Send projects result
+		meta: {
+			// meta information about request
+			total: totalProjectsInDatabase, // Total num projects available in db
+			limit: limit, // Num of projects asked for
+			offset: offset, // Num or projects asked to skip
+			count: projects.length, // Num of projects sent back
+		},
+	})
+	// Catch any unforseen errors
 }
 
 exports.getProjectById = async (req, res, next) => {
@@ -69,14 +69,14 @@ exports.createNewProject = async (req, res, next) => {
 	// Respond
 	// prettier-ignore
 	return res
-      // Add Location header to response
-      // Location header = URI pointing to endpoint where user can get new project
-      .setHeader(
-        'Location', 
-        `http://localhost:${process.env.PORT}/api/v1/projects/${newProject._id}`
-      )
-      .status(201)
-      .json(newProject)
+    // Add Location header to response
+    // Location header = URI pointing to endpoint where user can get new project
+    .setHeader(
+      'Location', 
+      `http://localhost:${process.env.PORT}/api/v1/projects/${newProject._id}`
+    )
+    .status(201)
+    .json(newProject)
 }
 
 exports.updateProjectById = async (req, res, next) => {

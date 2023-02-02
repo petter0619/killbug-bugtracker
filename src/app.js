@@ -1,4 +1,5 @@
 require('dotenv').config()
+require('express-async-errors')
 const express = require('express')
 const mongoose = require('mongoose')
 const projectRoutes = require('./routes/projectRoutes')
