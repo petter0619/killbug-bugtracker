@@ -1,9 +1,8 @@
 const Project = require('../models/Project')
 
 exports.getAllProjects = async (req, res, next) => {
-	try {
-		throw new Error('Oh nooooooooo!')
-		/* 
+	throw new Error('Oh nooooooooo!')
+	/* 
       Get only number of projects specified in "limit" query
       parameter. Default limit is 10 (aka unless told otherwise
       only get 10 projects at a time)
@@ -33,58 +32,43 @@ exports.getAllProjects = async (req, res, next) => {
 			},
 		})
 		// Catch any unforseen errors */
-	} catch (error) {
-		/* console.error(error)
-		// Send the following response if error occurred
-		return res.status(500).json({
-			message: error.message,
-		})*/
-		// next(error) will send error to error middleware
-		next(error)
-	}
 }
 
 exports.getProjectById = async (req, res, next) => {
-	// Big outer try-catch
-	try {
-		// Get our project id (put in local variable)
-		const projectId = req.params.projectId
+	// Get our project id (put in local variable)
+	const projectId = req.params.projectId
 
-		// Find project with that id
-		const project = await Project.findById(projectId)
+	// Find project with that id
+	const project = await Project.findById(projectId)
 
-		// IF(no project) return 404
-		if (!project) return res.sendStatus(404)
+	// IF(no project) return 404
+	if (!project) return res.sendStatus(404)
 
-		// respond with project data (200 OK)
-		return res.json(project)
-	} catch (error) {
-		next(error)
-	}
+	// respond with project data (200 OK)
+	return res.json(project)
 }
 
 exports.createNewProject = async (req, res, next) => {
-	try {
-		// Get data from req.body and place in local variables
-		const name = req.body.name || ''
-		const description = req.body.description || ''
+	// Get data from req.body and place in local variables
+	const name = req.body.name || ''
+	const description = req.body.description || ''
 
-		// If (no name || name is empty string) respond bad request
-		if (!name) {
-			return res.status(400).json({
-				message: 'You must provide a project name',
-			})
-		}
-
-		// Create project
-		const newProject = await Project.create({
-			name: name,
-			description: description,
+	// If (no name || name is empty string) respond bad request
+	if (!name) {
+		return res.status(400).json({
+			message: 'You must provide a project name',
 		})
+	}
 
-		// Respond
-		// prettier-ignore
-		return res
+	// Create project
+	const newProject = await Project.create({
+		name: name,
+		description: description,
+	})
+
+	// Respond
+	// prettier-ignore
+	return res
       // Add Location header to response
       // Location header = URI pointing to endpoint where user can get new project
       .setHeader(
@@ -93,59 +77,48 @@ exports.createNewProject = async (req, res, next) => {
       )
       .status(201)
       .json(newProject)
-	} catch (error) {
-		next(error)
-	}
 }
 
 exports.updateProjectById = async (req, res, next) => {
-	try {
-		// Place project id in local variable
-		const projectId = req.params.projectId
+	// Place project id in local variable
+	const projectId = req.params.projectId
 
-		// Place name and description from req.body in local variables
-		const { name, description } = req.body
+	// Place name and description from req.body in local variables
+	const { name, description } = req.body
 
-		// If no name && description respond with Bad Request
-		if (!name && !description) {
-			return res.status(400).json({
-				message: 'You must provide a name or a description to update...',
-			})
-		}
-
-		// Get project
-		const projectToUpdate = await Project.findById(projectId)
-
-		// If (no project) respond with Not Found
-		if (!projectToUpdate) return res.sendStatus(404)
-
-		// Update project
-		if (name) projectToUpdate.name = name
-		if (description) projectToUpdate.description = description
-		const updatedProject = await projectToUpdate.save()
-
-		// Craft response (return updated project)
-		return res.json(updatedProject)
-	} catch (error) {
-		next(error)
+	// If no name && description respond with Bad Request
+	if (!name && !description) {
+		return res.status(400).json({
+			message: 'You must provide a name or a description to update...',
+		})
 	}
+
+	// Get project
+	const projectToUpdate = await Project.findById(projectId)
+
+	// If (no project) respond with Not Found
+	if (!projectToUpdate) return res.sendStatus(404)
+
+	// Update project
+	if (name) projectToUpdate.name = name
+	if (description) projectToUpdate.description = description
+	const updatedProject = await projectToUpdate.save()
+
+	// Craft response (return updated project)
+	return res.json(updatedProject)
 }
 
 exports.deleteProjectById = async (req, res, next) => {
-	try {
-		// Get project id and place in local variable
-		const projectId = req.params.projectId
-		// Check if project exists
-		const projectToDelete = await Project.findById(projectId)
-		// IF (no project) return Not Found
-		if (!projectToDelete) return res.sendStatus(404)
+	// Get project id and place in local variable
+	const projectId = req.params.projectId
+	// Check if project exists
+	const projectToDelete = await Project.findById(projectId)
+	// IF (no project) return Not Found
+	if (!projectToDelete) return res.sendStatus(404)
 
-		// Delete project
-		await projectToDelete.delete()
+	// Delete project
+	await projectToDelete.delete()
 
-		// Craft our response
-		return res.sendStatus(204)
-	} catch (error) {
-		next(error)
-	}
+	// Craft our response
+	return res.sendStatus(204)
 }
