@@ -5,5 +5,5 @@ exports.notFoundMiddleware = (req, res) => {
 
 	if (isApiPath) return res.sendStatus(404)
 
-	return res.status(404).sendFile(path.join(__dirname, './views/notFound.html'))
+	return res.status(404).sendFile(path.join(__dirname, '../views/notFound.html'))
 }
