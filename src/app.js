@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const mongoose = require('mongoose')
 const projectRoutes = require('./routes/projectRoutes')
+const ticketRoutes = require('./routes/ticketRoutes')
 
 /* ------- 1) Skapa våran Express app ------- */
 const app = express()
@@ -18,8 +19,8 @@ app.use((req, res, next) => {
 
 /* ------- 4) Create our routes ------- */
 
-app.use('/api/v1/projects', projectRoutes)
-// app.use('/api/v1/tickets', ticketRoutes)
+app.use('/api/v1/projects' /* /... = see Router => */, projectRoutes)
+app.use('/api/v1/tickets' /* /... = see Router => */, ticketRoutes)
 
 /* ------- 2) Start server ------- */
 const port = process.env.PORT || 5000
