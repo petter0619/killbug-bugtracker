@@ -1,4 +1,5 @@
 const Project = require('../models/Project')
+const { NotFoundError, BadRequestError } = require('../utils/errors')
 
 exports.getAllProjects = async (req, res, next) => {
 	/* 
@@ -31,7 +32,6 @@ exports.getAllProjects = async (req, res, next) => {
 			count: projects.length, // Num of projects sent back
 		},
 	})
-	// Catch any unforseen errors
 }
 
 exports.getProjectById = async (req, res, next) => {
@@ -42,7 +42,7 @@ exports.getProjectById = async (req, res, next) => {
 	const project = await Project.findById(projectId)
 
 	// IF(no project) return 404
-	if (!project) return res.sendStatus(404)
+	if (!project) throw new NotFoundError('This project does not exist')
 
 	// respond with project data (200 OK)
 	return res.json(project)
@@ -50,15 +50,11 @@ exports.getProjectById = async (req, res, next) => {
 
 exports.createNewProject = async (req, res, next) => {
 	// Get data from req.body and place in local variables
-	const name = req.body.name || ''
-	const description = req.body.description || ''
+	const name = req.body.name
+	const description = req.body.description
 
 	// If (no name || name is empty string) respond bad request
-	if (!name) {
-		return res.status(400).json({
-			message: 'You must provide a project name',
-		})
-	}
+	if (!name) throw new BadRequestError('You must provide a name')
 
 	// Create project
 	const newProject = await Project.create({
@@ -87,17 +83,13 @@ exports.updateProjectById = async (req, res, next) => {
 	const { name, description } = req.body
 
 	// If no name && description respond with Bad Request
-	if (!name && !description) {
-		return res.status(400).json({
-			message: 'You must provide a name or a description to update...',
-		})
-	}
+	if (!name && !description) throw new BadRequestError('You must provide a name or a description to update...')
 
 	// Get project
 	const projectToUpdate = await Project.findById(projectId)
 
 	// If (no project) respond with Not Found
-	if (!projectToUpdate) return res.sendStatus(404)
+	if (!projectToUpdate) throw new NotFoundError('This project does not exist')
 
 	// Update project
 	if (name) projectToUpdate.name = name
@@ -114,7 +106,7 @@ exports.deleteProjectById = async (req, res, next) => {
 	// Check if project exists
 	const projectToDelete = await Project.findById(projectId)
 	// IF (no project) return Not Found
-	if (!projectToDelete) return res.sendStatus(404)
+	if (!projectToDelete) throw new NotFoundError('This project does not exist')
 
 	// Delete project
 	await projectToDelete.delete()

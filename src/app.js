@@ -1,10 +1,11 @@
 require('dotenv').config()
-require('express-async-errors')
+require('express-async-errors') // Catches errors and passes them to our error midldeware
 const express = require('express')
 const mongoose = require('mongoose')
 const projectRoutes = require('./routes/projectRoutes')
 const ticketRoutes = require('./routes/ticketRoutes')
-const path = require('path')
+const { errorMiddleware } = require('./middleware/errorMiddleware')
+const { notFoundMiddleware } = require('./middleware/notFoundMiddleware')
 
 /* ------- 1) Skapa våran Express app ------- */
 const app = express()
@@ -26,19 +27,10 @@ app.use('/api/v1/tickets' /* /... = see Router => */, ticketRoutes)
 
 /* ------- 5) Post route middleware ------- */
 // Not found middleware
-app.use((req, res) => {
-	const isApiPath = req.path.startsWith('/api/')
+app.use(notFoundMiddleware)
 
-	if (isApiPath) return res.sendStatus(404)
-
-	return res.status(404).sendFile(path.join(__dirname, './views/notFound.html'))
-})
-
-// Error middleware
-app.use((error, req, res, next) => {
-	console.log(error)
-	return res.json({ error: error.message })
-})
+// Error middleware (used to send uniform response in case of errors)
+app.use(errorMiddleware)
 
 /* ------- 2) Start server ------- */
 const port = process.env.PORT || 5000
