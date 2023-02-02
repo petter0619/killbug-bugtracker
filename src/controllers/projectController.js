@@ -1,19 +1,20 @@
 const Project = require('../models/Project')
 
-exports.getAllProjects = async (req, res) => {
+exports.getAllProjects = async (req, res, next) => {
 	try {
+		throw new Error('Oh nooooooooo!')
 		/* 
       Get only number of projects specified in "limit" query
       parameter. Default limit is 10 (aka unless told otherwise
       only get 10 projects at a time)
-    */
+    
 		const limit = Number(req.query?.limit || 10)
 		/* 
       Skip the number of projects specified in the "offset"
       query parameter according to default project sorting. 
       If no offset given, default is 0 (aka start from the
       beginning)
-    */
+    
 		const offset = Number(req.query?.offset || 0)
 
 		// Get all projects; filter according to "limit" and "offset" query params
@@ -31,17 +32,19 @@ exports.getAllProjects = async (req, res) => {
 				count: projects.length, // Num of projects sent back
 			},
 		})
-		// Catch any unforseen errors
+		// Catch any unforseen errors */
 	} catch (error) {
-		console.error(error)
+		/* console.error(error)
 		// Send the following response if error occurred
 		return res.status(500).json({
 			message: error.message,
-		})
+		})*/
+		// next(error) will send error to error middleware
+		next(error)
 	}
 }
 
-exports.getProjectById = async (req, res) => {
+exports.getProjectById = async (req, res, next) => {
 	// Big outer try-catch
 	try {
 		// Get our project id (put in local variable)
@@ -56,15 +59,11 @@ exports.getProjectById = async (req, res) => {
 		// respond with project data (200 OK)
 		return res.json(project)
 	} catch (error) {
-		console.error(error)
-		// Send the following response if error occurred
-		return res.status(500).json({
-			message: error.message,
-		})
+		next(error)
 	}
 }
 
-exports.createNewProject = async (req, res) => {
+exports.createNewProject = async (req, res, next) => {
 	try {
 		// Get data from req.body and place in local variables
 		const name = req.body.name || ''
@@ -95,15 +94,11 @@ exports.createNewProject = async (req, res) => {
       .status(201)
       .json(newProject)
 	} catch (error) {
-		console.error(error)
-		// Send the following response if error occurred
-		return res.status(500).json({
-			message: error.message,
-		})
+		next(error)
 	}
 }
 
-exports.updateProjectById = async (req, res) => {
+exports.updateProjectById = async (req, res, next) => {
 	try {
 		// Place project id in local variable
 		const projectId = req.params.projectId
@@ -132,14 +127,11 @@ exports.updateProjectById = async (req, res) => {
 		// Craft response (return updated project)
 		return res.json(updatedProject)
 	} catch (error) {
-		console.error(error)
-		return res.status(500).json({
-			message: error.message,
-		})
+		next(error)
 	}
 }
 
-exports.deleteProjectById = async (req, res) => {
+exports.deleteProjectById = async (req, res, next) => {
 	try {
 		// Get project id and place in local variable
 		const projectId = req.params.projectId
@@ -154,9 +146,6 @@ exports.deleteProjectById = async (req, res) => {
 		// Craft our response
 		return res.sendStatus(204)
 	} catch (error) {
-		console.error(error)
-		return res.status(500).json({
-			message: error.message,
-		})
+		next(error)
 	}
 }
