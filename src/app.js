@@ -3,7 +3,6 @@ require('express-async-errors') // Catches errors and passes them to our error m
 const express = require('express')
 const mongoose = require('mongoose')
 const projectRoutes = require('./routes/projectRoutes')
-const ticketRoutes = require('./routes/ticketRoutes')
 const { errorMiddleware } = require('./middleware/errorMiddleware')
 const { notFoundMiddleware } = require('./middleware/notFoundMiddleware')
 
@@ -23,7 +22,6 @@ app.use((req, res, next) => {
 /* ------- 4) Create our routes ------- */
 
 app.use('/api/v1/projects' /* /... = see Router => */, projectRoutes)
-app.use('/api/v1/tickets' /* /... = see Router => */, ticketRoutes)
 
 /* ------- 5) Post route middleware ------- */
 // Not found middleware
