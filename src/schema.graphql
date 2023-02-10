@@ -6,9 +6,16 @@ type Cart {
 }
 
 type CartItem {
-	id: ID
+	articleNumber: ID
 	name: String
-	price: Int
+	unitPrice: Int
+	quantity: Int
+}
+
+type Product {
+	articleNumber: ID
+	name: String
+	unitPrice: Int
 }
 
 type DeletedResourceResponse {
@@ -17,20 +24,20 @@ type DeletedResourceResponse {
 }
 
 ####### INPUTS #######
-input Product {
-	id: ID!
-	name: String!
-	price: Int!
+input ProductInput {
+	articleNumber: ID!
+	quantity: Int!
 }
 
 ####### RESOLVERS #######
 type Query {
 	getCartById(cartId: ID!): Cart
+	getProductById(articleNumber: ID!): Product
 }
 
 type Mutation {
 	createCart: Cart
-	addToCart(cartId: ID!, product: Product!): Cart
-	removeFromCart(cartId: ID!, product: Product!): Cart
+	addToCart(cartId: ID!, productInput: ProductInput!): Cart
+	removeFromCart(cartId: ID!, productInput: ProductInput!): Cart
 	deleteCart(cartId: ID!): DeletedResourceResponse
 }

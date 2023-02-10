@@ -2,8 +2,10 @@ const path = require('path')
 const crypto = require('crypto')
 const { deleteFile, fileExists, readJsonFile, writeJsonFile } = require('./utils/fileHandling')
 const { GraphQLError } = require('graphql')
+const { getCartProductData } = require('./utils/carts')
 
 const cartDirectory = path.join(__dirname, 'data', 'carts')
+const productDirectory = path.join(__dirname, 'data', 'products')
 
 exports.resolvers = {
 	Query: {
@@ -17,7 +19,21 @@ exports.resolvers = {
 
 			const cartData = await readJsonFile(filePath)
 
+			cartData.products = await getCartProductData(cartData.products)
+
 			return cartData
+		},
+		getProductById: async (_, args) => {
+			const articleNumber = args.articleNumber
+
+			const filePath = path.join(productDirectory, `${articleNumber}.json`)
+
+			const fileDoesExist = await fileExists(filePath)
+			if (!fileDoesExist) return new GraphQLError('That cart does not exist')
+
+			const productData = await readJsonFile(filePath)
+
+			return productData
 		},
 	},
 	Mutation: {
@@ -36,59 +52,71 @@ exports.resolvers = {
 		},
 		addToCart: async (_, args) => {
 			const cartId = args.cartId
-			const productToAdd = args.product
+			const { articleNumber, quantity: quantityToAdd } = args.productInput
 
-			const filePath = path.join(cartDirectory, `${cartId}.json`)
+			if (quantityToAdd <= 0) return new GraphQLError('You must add 1 or more of a product')
 
-			const fileDoesExist = await fileExists(filePath)
-			if (!fileDoesExist) return new GraphQLError('That cart does not exist')
+			const cartFilePath = path.join(cartDirectory, `${cartId}.json`)
+			const productFilePath = path.join(productDirectory, `${articleNumber}.json`)
 
-			const cartData = await readJsonFile(filePath)
+			const cartDoesExist = await fileExists(cartFilePath)
+			if (!cartDoesExist) return new GraphQLError('That cart does not exist')
 
-			cartData.products.push(productToAdd)
-			cartData.totalAmount += productToAdd.price
+			const productDoesExist = await fileExists(productFilePath)
+			if (!productDoesExist) return new GraphQLError('That product does not exist')
 
-			await writeJsonFile(filePath, cartData)
+			const cartData = await readJsonFile(cartFilePath)
+
+			const exisingProductIndex = cartData.products.findIndex((prod) => prod.articleNumber === articleNumber)
+
+			if (exisingProductIndex > -1) {
+				cartData.products[exisingProductIndex].quantity += quantityToAdd
+			} else {
+				cartData.products.push({
+					articleNumber: articleNumber,
+					quantity: quantityToAdd,
+				})
+			}
+
+			const productData = await readJsonFile(productFilePath)
+			cartData.totalAmount += productData.unitPrice * quantityToAdd
+
+			await writeJsonFile(cartFilePath, cartData)
+
+			cartData.products = await getCartProductData(cartData.products)
 
 			return cartData
 		},
 		removeFromCart: async (_, args) => {
 			const cartId = args.cartId
-			const productToRemove = args.product
+			const { articleNumber, quantity: quantityToRemove } = args.productInput
 
-			const filePath = path.join(cartDirectory, `${cartId}.json`)
+			const cartFilePath = path.join(cartDirectory, `${cartId}.json`)
+			const productFilePath = path.join(productDirectory, `${articleNumber}.json`)
 
-			const fileDoesExist = await fileExists(filePath)
-			if (!fileDoesExist) return new GraphQLError('That cart does not exist')
+			const cartDoesExist = await fileExists(cartFilePath)
+			if (!cartDoesExist) return new GraphQLError('That cart does not exist')
 
-			const cartData = await readJsonFile(filePath)
+			const cartData = await readJsonFile(cartFilePath)
 
 			if (cartData.products.length === 0) return new GraphQLError('Cart is already empty')
 
-			const prodToRemoveExists = cartData.products.some((prod) => {
-				// prettier-ignore
-				return prod.id === productToRemove.id 
-          && prod.name === productToRemove.name 
-          && prod.price === productToRemove.price
-			})
+			const productIndex = cartData.products.findIndex((prod) => prod.articleNumber == articleNumber)
 
-			if (!prodToRemoveExists) return new GraphQLError('That product does not exist on this cart')
+			if (productIndex < 0) return new GraphQLError('That product does not exist in cart')
 
-			const newProductsArray = cartData.products.filter((prod) => {
-				// prettier-ignore
-				const isProdToRemove = prod.id === productToRemove.id 
-          && prod.name === productToRemove.name 
-          && prod.price === productToRemove.price
+			if (cartData.products[productIndex].quantity > quantityToRemove) {
+				cartData.products[productIndex].quantity -= quantityToRemove
+			} else {
+				cartData.products = cartData.products.filter((prod) => prod.articleNumber !== articleNumber)
+			}
 
-				return !isProdToRemove
-			})
+			const productData = await readJsonFile(productFilePath)
+			cartData.totalAmount -= productData.unitPrice * quantityToRemove
 
-			const productsRemovedCount = cartData.products.length - newProductsArray.length
+			await writeJsonFile(cartFilePath, cartData)
 
-			cartData.products = newProductsArray
-			cartData.totalAmount -= productToRemove.price * productsRemovedCount
-
-			await writeJsonFile(filePath, cartData)
+			cartData.products = await getCartProductData(cartData.products)
 
 			return cartData
 		},
