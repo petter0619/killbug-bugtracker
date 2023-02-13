@@ -1,4 +1,4 @@
-const { BadRequestError, UnauthenticatedError } = require('../../utils/errors')
+const { UnauthenticatedError } = require('../../utils/errors')
 const bcrypt = require('bcrypt')
 const User = require('../../models/User')
 const { userRoles } = require('../../constants/users')
@@ -7,11 +7,6 @@ const jwt = require('jsonwebtoken')
 exports.register = async (req, res) => {
 	// Place desired username, email and password into local variables
 	const { username, password, email } = req.body
-
-	// Validate that the needed information was sent in
-	if (!username || !password || !email) {
-		throw new BadRequestError('You must provide a username, email and password in order to register')
-	}
 
 	// Encrypt the desired password
 	const salt = await bcrypt.genSalt(10)
@@ -39,11 +34,6 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
 	// Place candidate email and password into local variables
 	const { email, password: canditatePassword } = req.body
-
-	// Validate that the needed information was sent in
-	if (!email || !canditatePassword) {
-		throw new BadRequestError('You must provide an email and password in order to log in')
-	}
 
 	// Check if user with that email exits in db
 	const user = await User.findOne({ email: email })

@@ -1,3 +1,5 @@
+const { ValidationError } = require('../utils/errors')
+
 exports.errorMiddleware = (error, req, res, next) => {
 	let customError = {
 		statusCode: error.statusCode || 500,
@@ -10,6 +12,8 @@ exports.errorMiddleware = (error, req, res, next) => {
 		customError.message = error.message || 'No error message...'
 		customError.error = error
 	}
+
+	if (error instanceof ValidationError) customError.validatonErrors = error.validationErrors
 
 	if (error.name === 'ValidationError') {
 		customError.validatonErrors = Object.values(error.errors).map((item) => item.message)
