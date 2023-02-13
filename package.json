@@ -1,33 +1,27 @@
 {
-	"name": "killbug-bugtracker",
+	"name": "tuesday",
 	"version": "1.0.0",
-	"description": "Simple overview of use/purpose.",
+	"description": "",
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"dev": "nodemon ./src/app.js",
 		"seedDb": "node ./seedDb/seedDb.js"
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/petter0619/killbug-bugtracker.git"
-	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
-	"bugs": {
-		"url": "https://github.com/petter0619/killbug-bugtracker/issues"
-	},
-	"homepage": "https://github.com/petter0619/killbug-bugtracker#readme",
-	"devDependencies": {
-		"@faker-js/faker": "^7.6.0",
-		"nodemon": "^2.0.20",
-		"prettier": "2.8.2"
-	},
 	"dependencies": {
+		"bcrypt": "^5.1.0",
 		"dotenv": "^16.0.3",
 		"express": "^4.18.2",
 		"express-async-errors": "^3.1.1",
-		"mongoose": "^6.8.4"
+		"jsonwebtoken": "^9.0.0",
+		"mongoose": "^6.9.0"
+	},
+	"devDependencies": {
+		"@faker-js/faker": "^7.6.0",
+		"nodemon": "^2.0.20",
+		"prettier": "^2.8.3"
 	}
 }
