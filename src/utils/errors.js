@@ -1,4 +1,4 @@
-exports.catchErrors = (fn) => {
+const catchErrors = (fn) => {
 	return function (req, res, next) {
 		return fn(req, res, next).catch(next)
 	}
@@ -10,24 +10,24 @@ class CustomAPIError extends Error {
 	}
 }
 
-class NotFoundError extends CustomAPIError {
-	constructor(message) {
-		super(message)
-		this.statusCode = 404
-		this.name = 'NotFound'
-	}
-}
-
 class BadRequestError extends CustomAPIError {
 	constructor(message) {
 		super(message)
 		this.statusCode = 400
-		this.name = 'BadRequest'
+		this.name = 'BadRequestError'
+	}
+}
+
+class NotFoundError extends CustomAPIError {
+	constructor(message) {
+		super(message)
+		this.statusCode = 404
+		this.name = 'NotFoundError'
 	}
 }
 
 module.exports = {
-	CustomAPIError,
+	catchErrors,
 	NotFoundError,
 	BadRequestError,
 }

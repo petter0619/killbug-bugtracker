@@ -1,47 +1,47 @@
 require('dotenv').config()
-require('express-async-errors') // Catches errors and passes them to our error midldeware
+require('express-async-errors')
 const express = require('express')
 const mongoose = require('mongoose')
-const projectRoutes = require('./routes/projectRoutes')
+const apiRoutes = require('./routes/api')
 const { errorMiddleware } = require('./middleware/errorMiddleware')
 const { notFoundMiddleware } = require('./middleware/notFoundMiddleware')
 
-/* ------- 1) Skapa våran Express app ------- */
+/* ----------- Create our Expres app ------------ */
 const app = express()
 
-/* ------- 3) Sätt upp våran middleware ------- */
-// Parse JSON on request body and place on req.body
+/* ---------------------------------------------- */
+/* ----------------- Middleware ----------------- */
+/* ---------------------------------------------- */
 app.use(express.json())
 
 app.use((req, res, next) => {
 	console.log(`Processing ${req.method} request to ${req.path}`)
-	// when above code executed; go on to next middleware/routing
 	next()
 })
 
-/* ------- 4) Create our routes ------- */
+/* ---------------------------------------------- */
+/* ------------------- Routes ------------------- */
+/* ---------------------------------------------- */
+app.use('/api/v1', apiRoutes)
 
-app.use('/api/v1/projects' /* /... = see Router => */, projectRoutes)
-
-/* ------- 5) Post route middleware ------- */
-// Not found middleware
+/* ---------------------------------------------- */
+/* --------------- Error Handling --------------- */
+/* ---------------------------------------------- */
 app.use(notFoundMiddleware)
-
-// Error middleware (used to send uniform response in case of errors)
 app.use(errorMiddleware)
 
-/* ------- 2) Start server ------- */
+/* ---------------------------------------------- */
+/* ---------------- Server Setup ---------------- */
+/* ---------------------------------------------- */
 const port = process.env.PORT || 5000
-async function run() {
+const run = async () => {
 	try {
-		// Connect to MongoDB database (via Mongoose)
 		mongoose.set('strictQuery', false)
 		const conn = await mongoose.connect(process.env.MONGO_CONNECTION_STRING)
 		console.log(`MongoDB connected: ${conn.connection.host}`)
 
-		// Start server; listen to requests on port
 		app.listen(port, () => {
-			console.log(`Server running on http://localhost:${port}`)
+			console.log(`Server is listening on ${process.env.NODE_ENV === 'development' ? 'http://localhost:' : 'port '}${port}`)
 		})
 	} catch (error) {
 		console.error(error)

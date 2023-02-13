@@ -1,18 +1,36 @@
 exports.errorMiddleware = (error, req, res, next) => {
-	console.log(error)
-
-	const customErrorResponse = {
+	let customError = {
 		statusCode: error.statusCode || 500,
-		message: error.message,
+		message: error.message || 'Something went wrong try again later',
 	}
+
+	if (process.env.NODE_ENV === 'development') {
+		console.error(error)
+
+		customError.message = error.message || 'No error message...'
+		customError.error = error
+	}
+
+	if (error.name === 'ValidationError') {
+		customError.validatonErrors = Object.values(error.errors).map((item) => item.message)
+
+		customError.statusCode = 400
+	}
+
+	// Reformats Mongoose error when a duplicate value is entered for a...
+	// ...field that has the "unique: true" validation
+	// prettier-ignore
+	if (error.code && error.code === 11000) {
+    customError.message = `Duplicate value entered for ${Object.keys(
+      error.keyValue
+    )} field, please choose another value`
+    customError.statusCode = 400
+  }
 
 	if (error.name === 'CastError') {
-		customErrorResponse.statusCode = 404
-		customErrorResponse.message = 'A resource with that id does not exist'
+		customError.message = `No item found with id : ${error.value}`
+		customError.statusCode = 404
 	}
 
-	// prettier-ignore
-	return res
-		.status(customErrorResponse.statusCode)
-		.json(customErrorResponse)
+	return res.status(customError.statusCode).json(customError)
 }
