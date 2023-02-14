@@ -4,6 +4,8 @@ const User = require('../../models/User')
 const { userRoles } = require('../../constants/users')
 const jwt = require('jsonwebtoken')
 
+// const { validationResult } = require('express-validator')
+
 exports.register = async (req, res) => {
 	// Place desired username, email and password into local variables
 	const { username, password, email } = req.body
@@ -32,6 +34,9 @@ exports.register = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
+	/* const errors = validationResult(req)
+	return res.json(errors) */
+
 	// Place candidate email and password into local variables
 	const { email, password: canditatePassword } = req.body
 
