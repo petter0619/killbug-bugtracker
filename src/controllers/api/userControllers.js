@@ -1,5 +1,5 @@
 const User = require('../../models/User')
-const { NotFoundError } = require('../../utils/errors')
+const { NotFoundError, UnauthorizedError } = require('../../utils/errors')
 
 exports.getAllUsers = async (req, res) => {
 	// prettier-ignore
@@ -28,6 +28,11 @@ exports.getUserById = async (req, res) => {
 exports.deleteUserById = async (req, res) => {
 	// Grab the user id and place in local variable
 	const userId = req.params.userId
+
+	// IF (logged in user !== userToDelete) throw UnauthorizedError
+	if (req.user.userId !== userId) {
+		throw new UnauthorizedError('Unauthorized Access')
+	}
 
 	// Get the user from the database
 	const user = await User.findById(userId)
