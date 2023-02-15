@@ -42,10 +42,18 @@ class UnauthorizedError extends CustomAPIError {
 	}
 }
 
+class ValidationError extends BadRequestError {
+	constructor(message, validationErrors) {
+		super(message)
+		this.validationErrors = validationErrors || []
+	}
+}
+
 module.exports = {
 	catchErrors,
 	NotFoundError,
 	BadRequestError,
 	UnauthenticatedError,
 	UnauthorizedError,
+	ValidationError,
 }

@@ -1,3 +1,4 @@
+const { userRoles } = require('../../constants/users')
 const User = require('../../models/User')
 const { NotFoundError, UnauthorizedError } = require('../../utils/errors')
 
@@ -30,7 +31,7 @@ exports.deleteUserById = async (req, res) => {
 	const userId = req.params.userId
 
 	// IF (logged in user !== userToDelete) throw UnauthorizedError
-	if (req.user.userId !== userId) {
+	if (req.user.userId !== userId || req.user?.role === userRoles.ADMIN) {
 		throw new UnauthorizedError('Unauthorized Access')
 	}
 

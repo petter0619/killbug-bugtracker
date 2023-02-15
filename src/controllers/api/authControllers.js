@@ -8,11 +8,6 @@ exports.register = async (req, res) => {
 	// Placera inskickad data (epost, lösenord, username) i lokala variabler
 	const { email, password, username } = req.body
 
-	// Validera att datan vi behöver skickades in
-	if (!username || !email || !password) {
-		throw new BadRequestError('You must provide an email, password and username to register')
-	}
-
 	// Kryptera lösenordet med bcrypt
 	const salt = await bcrypt.genSalt(10)
 	const hashedPassword = await bcrypt.hash(password, salt)
@@ -39,11 +34,6 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
 	// Placera inskickad data (epost, lösenord) i lokala variabler
 	const { email, password: candidatePassword } = req.body
-
-	// Validera att datan vi behöver skickades in
-	if (!email || !candidatePassword) {
-		throw new BadRequestError('You must provide an email and a password')
-	}
 
 	// Kolla om användarens epost finns
 	const user = await User.findOne({ email: email })
