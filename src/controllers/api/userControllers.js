@@ -31,7 +31,7 @@ exports.deleteUserById = async (req, res) => {
 	const userId = req.params.userId
 
 	// IF (logged in user !== userToDelete) throw UnauthorizedError
-	if (req.user.userId !== userId || req.user?.role === userRoles.ADMIN) {
+	if (req.user.userId !== userId && req.user?.role !== userRoles.ADMIN) {
 		throw new UnauthorizedError('Unauthorized Access')
 	}
 

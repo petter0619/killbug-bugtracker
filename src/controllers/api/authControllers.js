@@ -1,4 +1,4 @@
-const { BadRequestError, UnauthenticatedError } = require('../../utils/errors')
+const { UnauthenticatedError } = require('../../utils/errors')
 const bcrypt = require('bcrypt')
 const User = require('../../models/User')
 const { userRoles } = require('../../constants/users')
